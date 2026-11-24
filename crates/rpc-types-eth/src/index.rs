@@ -66,6 +66,12 @@ impl<'a> serde::Deserialize<'a> for Index {
                         })
                     },
                     |val| {
+                        // `from_str_radix` accepts a leading `+` sign, which is not a hex digit.
+                        if val.starts_with('+') {
+                            return Err(serde::de::Error::custom(
+                                "Failed to parse hex encoded index value: invalid digit '+'",
+                            ));
+                        }
                         usize::from_str_radix(val, 16).map(Index).map_err(|e| {
                             serde::de::Error::custom(format!(
                                 "Failed to parse hex encoded index value: {e}"
