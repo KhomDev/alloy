@@ -130,6 +130,11 @@ mod tests {
         let result: Result<Index, _> = serde_json::from_value(json_data);
         assert!(result.is_err());
 
+        // A leading `+` is not a hex digit, even though `from_str_radix` accepts it
+        let json_data = json!("0x+2a");
+        let result: Result<Index, _> = serde_json::from_value(json_data);
+        assert!(result.is_err());
+
         // Test invalid decimal index
         let json_data = json!("abc");
         let result: Result<Index, _> = serde_json::from_value(json_data);
